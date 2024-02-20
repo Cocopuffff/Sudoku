@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="general.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Sudoku</h1>
+    <div class="menu">
+      <button class="button">Hint</button>
+      <div class="lives">
+        Lives:
+        <span>3</span>
+      </div>
+      <div class="timer">
+        <label id="hours">00</label>:<label id="minutes">00</label>:<label
+          id="seconds"
+          >00</label
+        >
+      </div>
+      <button class="button">Start Over</button>
+    </div>
+    <div class="twoboards">
+      <div id="board-wrapper">
+        <div id="system-board"></div>
+      </div>
+      <div id="board-wrapper">
+        <div id="board"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

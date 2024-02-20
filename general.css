@@ -1,0 +1,23 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Helvetica;
+  font-size: 1.1rem;
+}
+
+:root {
+  --cell-colour: #fff5ee;
+  --cell-border: #d3d3d3;
+  --cell-width: 55px;
+  --cell-height: 55px;
+  --square-border: #818589;
+  --board-border: #834333;
+}
+
+h1 {
+  text-align: center;
+  font-size: 3rem;
+}
