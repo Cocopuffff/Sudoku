@@ -323,22 +323,28 @@ const { board: board, squareMap, moves } = initialiseBoard(); // board = { cell:
 const userBoard = createUserBoardDataStructure();
 const cellsList = Object.keys(board);
 fillBoard(board, cellsList, []);
-updateUserBoard(board, userBoard, "demo");
+updateUserBoard(board, userBoard, squareMap, "demo");
 logBoardState(board);
 displayBoardTemplate(userBoard);
 
-function updateUserBoard(systemBoard, userBoard, difficulty = "demo") {
+function updateUserBoard(
+  systemBoard,
+  userBoard,
+  squareMap,
+  difficulty = "demo"
+) {
   const { difficulty: countOfNumbersToReveal, minNumbersToRevealPerSquare } =
     SetDifficulty(difficulty);
-  const populatedUserBoard = updateUserBoardBySystemBoard(
-    systemBoard,
-    userBoard
-  );
-  const hiddenUserBoard = updateUserBoardByDifficulty(
-    populatedUserBoard,
-    countOfNumbersToReveal,
-    minNumbersToRevealPerSquare
-  );
+  // const populatedUserBoard = updateUserBoardBySystemBoard(
+  //   systemBoard,
+  //   userBoard
+  // );
+  // const hiddenUserBoard = updateUserBoardByDifficulty(
+  //   populatedUserBoard,
+  //   countOfNumbersToReveal,
+  //   minNumbersToRevealPerSquare,
+  //   squareMap
+  // );
 }
 
 function updateDisplayWithSystemBoard() {
@@ -348,24 +354,93 @@ function updateDisplayWithSystemBoard() {
   }
 }
 
-function updateUserBoardBySystemBoard(systemBoard, userBoard) {
-  // loop through system board kvp to find userBoard
-  for (const [cell, number] of Object.entries(systemBoard)) {
-    console.log(`cell: ${cell}, number: ${number}`);
-    userBoard[cell].choice = number;
-  }
-  return userBoard;
-}
-
 function updateUserBoardByDifficulty(
   userBoard,
   countOfNumbersToReveal,
-  minNumbersToRevealPerSquare
+  minNumbersToRevealPerSquare,
+  squareMap
 ) {
-  // Iterate through the userBoard.cell
-  // grey out numbers that are userBoard.cell.shownAtStart = true
-  return;
+  let squareMapOfCellsToReveal = structuredClone(squareMap);
+  const arrOfNumberOfCellsToRevealInSquares =
+    randomiseNoOfCellsToRevealInEachSquare(
+      minNumbersToRevealPerSquare,
+      countOfNumbersToReveal
+    );
+  console.log(arrOfNumberOfCellsToRevealInSquares);
+
+  squareMapOfCellsToReveal = removeCellsToRevealRandomly(
+    squareMapOfCellsToReveal,
+    arrOfNumberOfCellsToRevealInSquares
+  );
+  console.log(Object.values(squareMapOfCellsToReveal));
+
+  const listOfCellsToReveal = concatCellsToReveal(squareMapOfCellsToReveal);
+  console.log(listOfCellsToReveal);
+
+  for (const cell of listOfCellsToReveal) {
+    if (cell in userBoard) {
+      userBoard[cell].choice = board[cell];
+      userBoard[cell].shownAtStart = true;
+      document.querySelector(`#board .square #${cell}`).innerText =
+        userBoard[cell].choice;
+    }
+  }
+
+  return userBoard;
 }
+
+// Start with a 2D array of minNumbersToRevealPerSquare, then add cells to show to squares randomly until we reach countOfNumbersToReveal
+function randomiseNoOfCellsToRevealInEachSquare(
+  minNumbersToRevealPerSquare,
+  countOfNumbersToReveal
+) {
+  const arrOfNumberOfCellsToRevealInSquares = Array.from(
+    { length: 9 },
+    (x) => (x = minNumbersToRevealPerSquare)
+  );
+  let countOfNumbersRevealed =
+    arrOfNumberOfCellsToRevealInSquares.length * minNumbersToRevealPerSquare;
+
+  while (countOfNumbersRevealed < countOfNumbersToReveal) {
+    i = Math.floor(Math.random() * 9);
+    if (arrOfNumberOfCellsToRevealInSquares[i] !== 9) {
+      arrOfNumberOfCellsToRevealInSquares[i]++;
+      countOfNumbersRevealed++;
+    }
+  }
+  return arrOfNumberOfCellsToRevealInSquares;
+}
+
+// Iterate through squareMapOfCellsToReveal to shuffle and remove cells according to pre-determined number of cells to show
+function removeCellsToRevealRandomly(
+  squareMapOfCellsToReveal,
+  arrOfNumberOfCellsToRevealInSquares
+) {
+  let iteratorIndex = 0;
+  for (let [square, cellsToReveal] of Object.entries(
+    squareMapOfCellsToReveal
+  )) {
+    squareMapOfCellsToReveal[square] = shuffleArray(cellsToReveal);
+    while (
+      squareMapOfCellsToReveal[square].length >
+      arrOfNumberOfCellsToRevealInSquares[iteratorIndex]
+    ) {
+      squareMapOfCellsToReveal[square].pop();
+    }
+    iteratorIndex++;
+  }
+  return squareMapOfCellsToReveal;
+}
+
+function concatCellsToReveal(squareMapOfCellsToReveal) {
+  let result = [];
+  for (const cell of Object.values(squareMapOfCellsToReveal)) {
+    result = result.concat(cell);
+  }
+  return result;
+}
+
+updateUserBoardByDifficulty(userBoard, 78, 6, squareMap);
 
 function updateDisplayWithUserBoard() {}
 function displayBoardTemplate(userBoard) {
