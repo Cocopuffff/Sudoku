@@ -10,6 +10,8 @@ body {
 
 :root {
   --cell-colour: #fff5ee;
+  --cell-right-colour: #dbf0d7;
+  --cell-wrong-colour: #ff7f7f;
   --cell-border: #d3d3d3;
   --cell-width: 55px;
   --cell-height: 55px;

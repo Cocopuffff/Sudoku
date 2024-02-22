@@ -39,9 +39,7 @@ function initialiseBoard() {
       }
     }
   }
-
-  const userMoves = [];
-  return { board, squareMap, userMoves };
+  return [board, squareMap];
 }
 
 function createUserBoardDataStructure() {
@@ -236,19 +234,10 @@ function fillBoard(boardState, emptyCellsQueue, filledCellsArray) {
     if (fillBoard(boardState, emptyCellsQueue, filledCellsArray)) {
       return true;
     }
-    // console.log(`Before backtracking:`);
-    // console.log(`nextEmptyCell: ${nextEmptyCell}, boardState[nextEmptyCell]: ${boardState[nextEmptyCell]}`);
-    // console.log(`emptyCellsQueue: ${emptyCellsQueue}, length: ${emptyCellsQueue.length}`);
-    // console.log(`filledCellsArray: ${filledCellsArray}, length: ${filledCellsArray.length}`);
 
     emptyCellsQueue.unshift(nextEmptyCell);
     boardState[nextEmptyCell] = null;
     filledCellsArray.pop();
-
-    // console.log(`After backtracking:`);
-    // console.log(`nextEmptyCell: ${nextEmptyCell}, boardState[nextEmptyCell]: ${boardState[nextEmptyCell]}`);
-    // console.log(`emptyCellsQueue: ${emptyCellsQueue}, length: ${emptyCellsQueue.length}`);
-    // console.log(`filledCellsArray: ${filledCellsArray}, length: ${filledCellsArray.length}`);
   }
 
   // Backtrack further because algorithm is not able to fill next cell based on rules
@@ -278,6 +267,18 @@ function resetLevel() {
 
 function tryAgain() {
   // resassign board data structure to original generated data structure;
+  [board, squareMap] = initialiseBoard();
+  cellsList = Object.keys(board);
+  console.log(board);
+  userBoard = createUserBoardDataStructure();
+
+  document.querySelector("#system-board").innerHTML = "";
+  document.querySelector("#board").innerHTML = "";
+  fillBoard(board, cellsList, []);
+  // logBoardState(board);
+  displayBoardTemplate(userBoard);
+  console.log(userBoard);
+  showDifficulty();
 }
 
 function SetDifficulty(difficulty) {
@@ -296,36 +297,43 @@ function SetDifficulty(difficulty) {
       minNumbersToRevealPerSquare = 5;
       valid = true;
       break;
-    case "medium":
+    case "beginner":
       // reveal some numbers
       countOfNumbersToReveal = 54;
       minNumbersToRevealPerSquare = 4;
       valid = true;
       break;
-    case "hard":
+    case "novice":
       // reveal little numbers
       countOfNumbersToReveal = 45;
       minNumbersToRevealPerSquare = 3;
       valid = true;
       break;
+    case "advanced":
+      // reveal very little numbers
+      countOfNumbersToReveal = 36;
+      minNumbersToRevealPerSquare = 2;
+      valid = true;
+      break;
+    case "master":
+      // reveal very little numbers
+      countOfNumbersToReveal = 27;
+      minNumbersToRevealPerSquare = 1;
+      valid = true;
+      break;
+    case "insane":
+      // reveal very little numbers
+      countOfNumbersToReveal = 5;
+      minNumbersToRevealPerSquare = 0;
+      valid = true;
+      break;
     default:
       break;
   }
-
-  return { valid, countOfNumbersToReveal, minNumbersToRevealPerSquare };
+  return [valid, countOfNumbersToReveal, minNumbersToRevealPerSquare];
 }
 
 function UpdateMove(boardPosition) {}
-
-// function calls
-const { board: board, squareMap, moves } = initialiseBoard(); // board = { cell: null }, squareMap = { square11 = [a1, a2, a3, ... ] , ...,  square33 = []}, moves = [];
-
-const userBoard = createUserBoardDataStructure();
-const cellsList = Object.keys(board);
-fillBoard(board, cellsList, []);
-updateUserBoard(board, userBoard, squareMap, "demo");
-logBoardState(board);
-displayBoardTemplate(userBoard);
 
 function updateUserBoard(
   systemBoard,
@@ -333,18 +341,18 @@ function updateUserBoard(
   squareMap,
   difficulty = "demo"
 ) {
-  const { difficulty: countOfNumbersToReveal, minNumbersToRevealPerSquare } =
+  console.log(userBoard);
+  const [valid, countOfNumbersToReveal, minNumbersToRevealPerSquare] =
     SetDifficulty(difficulty);
-  // const populatedUserBoard = updateUserBoardBySystemBoard(
-  //   systemBoard,
-  //   userBoard
-  // );
-  // const hiddenUserBoard = updateUserBoardByDifficulty(
-  //   populatedUserBoard,
-  //   countOfNumbersToReveal,
-  //   minNumbersToRevealPerSquare,
-  //   squareMap
-  // );
+  console.log(`countOfNumbersToReveal: ${countOfNumbersToReveal}`);
+  console.log(`minNumbersToRevealPerSquare: ${minNumbersToRevealPerSquare}`);
+  updateUserBoardByDifficulty(
+    userBoard,
+    countOfNumbersToReveal,
+    minNumbersToRevealPerSquare,
+    squareMap
+  );
+  highlightEmptyCells();
 }
 
 function updateDisplayWithSystemBoard() {
@@ -372,21 +380,26 @@ function updateUserBoardByDifficulty(
     squareMapOfCellsToReveal,
     arrOfNumberOfCellsToRevealInSquares
   );
-  console.log(Object.values(squareMapOfCellsToReveal));
 
   const listOfCellsToReveal = concatCellsToReveal(squareMapOfCellsToReveal);
-  console.log(listOfCellsToReveal);
 
   for (const cell of listOfCellsToReveal) {
     if (cell in userBoard) {
       userBoard[cell].choice = board[cell];
       userBoard[cell].shownAtStart = true;
-      document.querySelector(`#board .square #${cell}`).innerText =
+      document.querySelector(`#board .square #${cell}`).innerHTML =
         userBoard[cell].choice;
     }
   }
 
   return userBoard;
+}
+
+function highlightEmptyCells() {
+  const emptyCellInputs = document.querySelectorAll(".board-input");
+  for (const cellInput of emptyCellInputs) {
+    cellInput.classList.add("active");
+  }
 }
 
 // Start with a 2D array of minNumbersToRevealPerSquare, then add cells to show to squares randomly until we reach countOfNumbersToReveal
@@ -440,8 +453,6 @@ function concatCellsToReveal(squareMapOfCellsToReveal) {
   return result;
 }
 
-updateUserBoardByDifficulty(userBoard, 78, 6, squareMap);
-
 function updateDisplayWithUserBoard() {}
 function displayBoardTemplate(userBoard) {
   // For development only
@@ -470,11 +481,71 @@ function displayBoardTemplate(userBoard) {
       const displayCell = document.createElement("div");
       displayCell.id = cell;
       displayCell.classList.add("cell");
+      displayCell.innerHTML = `<input type="number" min="1" max="9" step="1" class="board-input">`;
       square3x3.appendChild(displayCell);
     }
     board.appendChild(square3x3);
   }
-  updateUserBoard(board, userBoard, "demo");
+
+  const boardInputs = document.querySelectorAll(".board-input");
+  for (const input of boardInputs) {
+    input.addEventListener("focusout", evaluateCell);
+  }
+}
+
+function evaluateCell(e) {
+  const cellHTML = e.target.parentNode;
+  const cellId = e.target.parentNode.id;
+  if (e.target.value === undefined || e.target.value.length === 0) {
+    return;
+  }
+
+  if (e.target.value === board[cellId]) {
+    cellHTML.innerHTML = e.target.value;
+    cellHTML.style.backgroundColor = "var(--cell-right-colour)";
+    // check win condition
+  } else {
+    e.target.style.backgroundColor = "var(--cell-wrong-colour)";
+    lives--;
+    if (lives === 0) {
+      console.log("You died");
+    }
+    document.querySelector(".lives span").innerText = lives;
+    // check lose condition
+  }
+}
+
+function showDifficulty(event) {
+  const chooseDifficulty = new bootstrap.Modal("#chooseDifficulty");
+  const chooseDifficultyEl = document.querySelector("#chooseDifficulty");
+  chooseDifficultyEl.addEventListener("click", (event) => {
+    if (event.target.classList.contains("difficulty")) {
+      const difficultySelected = event.target.id;
+      console.log(board);
+      console.log(userBoard);
+      console.log(squareMap);
+      console.log(difficultySelected);
+      updateUserBoard(board, userBoard, squareMap, difficultySelected);
+      chooseDifficulty.hide();
+    }
+  });
+  chooseDifficulty.show();
+}
+
+function startOverQuestion() {
+  console.log("clicked");
+  const startOver = new bootstrap.Modal("#startOverModal");
+  const startOverEl = document.querySelector("#startOverModal");
+  startOverEl.addEventListener("click", (event) => {
+    const startOverResult = event.target.id;
+    if (startOverResult === "no") {
+      return;
+    } else if (startOverResult === "yes") {
+      startOver.hide();
+      tryAgain();
+    }
+  });
+  startOver.show();
 }
 
 // code timer
@@ -489,3 +560,17 @@ function updateTime() {
   const seconds = totalSeconds / 60 / 60;
   const minutes = Math.floor(totalSeconds / 60);
 }
+
+// function calls
+// const modal = new bootstrap.Modal('')
+window.addEventListener("load", showDifficulty); // toggle chooseDifficulty model
+let [board, squareMap] = initialiseBoard(); // board = { cell: null }, squareMap = { square11 = [a1, a2, a3, ... ] , ...,  square33 = []}, moves = [];
+
+let userBoard = createUserBoardDataStructure();
+let cellsList = Object.keys(board);
+let lives = 3;
+fillBoard(board, cellsList, []);
+logBoardState(board);
+displayBoardTemplate(userBoard);
+const startOverButton = document.querySelector("#startOver");
+startOverButton.addEventListener("click", startOverQuestion);

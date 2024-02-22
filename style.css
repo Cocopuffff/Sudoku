@@ -2,21 +2,12 @@ body {
   background-color: #faf9f6;
 }
 
-.button {
-  background-color: darksalmon;
-  border: 0;
-  border-radius: 5px;
-  width: 20%;
-  min-width: 30px;
+.btn {
+  min-width: 80px;
   height: 3rem;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 2px 2px rgba(0, 0, 0, 0.15),
     0 4px 4px rgba(0, 0, 0, 0.15), 0 8px 8px rgba(0, 0, 0, 0.15);
   font-size: 1.2rem;
-  font-weight: 900;
-}
-
-.button:hover {
-  color: white;
 }
 
 .twoboards {
@@ -61,9 +52,34 @@ body {
   align-items: center;
 }
 
+.board-input {
+  background-color: var(--cell-colour);
+  border: 1px;
+  box-shadow: none;
+  width: 100%;
+  height: 100%;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.active {
+  border: 2px solid #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
 .menu {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   margin: 25px auto;
+}
+
+.modal-title {
+  display: block;
+  margin: auto;
+}
+
+.modal-body button {
+  display: block;
+  margin: 15px auto;
 }
