@@ -13,22 +13,32 @@
     />
     <link rel="stylesheet" href="general.css" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <h1>Sudoku</h1>
-    <div class="menu">
-      <button class="btn btn-info" style="min-width: 120px">Hint</button>
+    <h1 class="source-code-pro">Sudoku</h1>
+    <div class="menu source-code-pro">
+      <button
+        class="btn btn-info"
+        style="min-width: 100px"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        data-bs-title="Toggle this button on and select cell to get candidate numbers for cell and consume one life."
+        id="hint"
+      >
+        Hint
+      </button>
       <div class="lives">
         Lives:
         <span>3</span>
       </div>
-      <div class="timer">
-        <label id="hours">00</label>:<label id="minutes">00</label>:<label
-          id="seconds"
-          >00</label
-        >
-      </div>
-      <button class="btn btn-danger" style="min-width: 120px" id="startOver">
+      <div class="stopwatch">00:00:00</div>
+      <button class="btn btn-danger" style="min-width: 100px" id="startOver">
         Start Over
       </button>
     </div>
@@ -109,37 +119,109 @@
       <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Are you sure you want to start over?</h5>
+            <h5 class="modal-title">Do you really want to start over?</h5>
           </div>
           <div class="modal-body">
-            <button
-              type="button"
-              class="btn btn-success btn-lg difficulty"
-              style="min-width: 120px"
-              id="no"
-            >
-              No
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-danger btn-lg difficulty"
-              style="min-width: 120px"
-              id="yes"
-            >
-              Start Over
-            </button>
+            <div class="buttons-area">
+              <button
+                type="button"
+                class="btn btn-success btn-lg no"
+                style="min-width: 120px"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-lg tryAgain"
+                style="min-width: 120px"
+              >
+                Start Over
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="twoboards">
-      <div id="board-wrapper">
-        <div id="system-board"></div>
+    <div class="modal" tabindex="-1" id="loseModal">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h5 class="modal-title">You lose.</h5>
+            <div class="buttons-area">
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
+                style="min-width: 120px"
+                id="retryBoard"
+              >
+                Retry Same Board
+              </button>
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
+                style="min-width: 120px"
+                id="tryNewPuzzle"
+              >
+                Try New Puzzle
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="modal" tabindex="-1" id="winModal">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h5 class="modal-title">
+              Congratulations! You won
+              <strong id="difficultySelected"></strong> mode!
+            </h5>
+            <div class="d-flex justify-content-between">
+              <div class="confetti">🎊</div>
+              <div>
+                <h5 class="lives">Lives remaining: <strong>3</strong></h5>
+                <h5>
+                  Time taken:
+                  <strong class="winModalStopwatch">00:00:00</strong>
+                </h5>
+              </div>
+              <div class="confetti">🎊</div>
+            </div>
+            <div class="buttons-area">
+              <button
+                type="button"
+                class="btn btn-success"
+                style="min-width: 120px"
+                id="share"
+              >
+                Share
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                style="min-width: 120px"
+                id="tryAgain"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-background">
+      <!-- <div id="board-wrapper">
+        <div id="system-board"></div>
+      </div> -->
       <div id="board-wrapper">
         <form id="board"></form>
       </div>
     </div>
+    <div
+      class="source-code-pro d-flex justify-content-center my-5"
+      id="message"
+    ></div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

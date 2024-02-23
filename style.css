@@ -10,7 +10,7 @@ body {
   font-size: 1.2rem;
 }
 
-.twoboards {
+.board-background {
   display: flex;
   justify-content: space-around;
 }
@@ -20,7 +20,7 @@ body {
   justify-content: center;
 }
 
-#system-board,
+/* #system-board, */
 #board {
   display: grid;
   grid-template-columns: repeat(3, calc(var(--cell-width) * 3));
@@ -29,7 +29,6 @@ body {
   align-items: center;
   padding: 10px;
   background-color: var(--board-border);
-  /* box-shadow: var(--shadow); */
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12),
     0 4px 4px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.12),
     0 16px 16px rgba(0, 0, 0, 0.12);
@@ -50,6 +49,22 @@ body {
   height: var(--cell-height);
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.cell .candidate-number-holder {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(5, calc(var(--cell-width) / 5));
+  grid-template-rows: repeat(2, calc(var(--cell-height) / 5));
+  row-gap: calc(var(--cell-height) * 2.5 / 5);
+  top: 3px;
+  left: 3px;
+}
+
+.candidate-number {
+  color: var(--candidate-number-colour);
+  font-size: 0.5rem;
 }
 
 .board-input {
@@ -74,12 +89,120 @@ body {
   margin: 25px auto;
 }
 
+@keyframes pulse {
+  0% {
+    font-size: 1rem;
+  }
+  50% {
+    font-size: 1.5rem;
+    color: red;
+  }
+  100% {
+    font-size: 1rem;
+  }
+}
+
+.warning {
+  animation: pulse 1s;
+  animation-iteration-count: 1;
+}
+
+.hint-on {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  color: white;
+}
+
+.hint-on:hover {
+  color: white;
+}
+
 .modal-title {
   display: block;
   margin: auto;
 }
 
+.modal-body {
+  text-align: center;
+}
+
 .modal-body button {
-  display: block;
   margin: 15px auto;
+}
+
+.modal-body h5 {
+  margin: 40px auto;
+}
+
+.modal-body .modal-title {
+  margin: 10px auto;
+}
+
+.difficulty {
+  display: block;
+}
+
+.buttons-area {
+  display: flex;
+}
+
+.confetti {
+  display: flex;
+  align-items: center;
+  font-family: "Noto Color Emoji", Helvetica;
+  font-size: 6rem;
+}
+
+@media screen and (max-width: 575px) {
+  h1 {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+
+  .btn {
+    min-width: 30px;
+    height: 2rem;
+
+    font-size: 0.8rem;
+  }
+
+  .menu {
+    margin: 10px auto;
+  }
+
+  #board-wrapper {
+    margin: 10px auto;
+  }
+
+  #board {
+    padding: 10px auto;
+    grid-template-columns: repeat(3, calc(var(--cell-width) * 2));
+    grid-template-rows: repeat(3, calc(var(--cell-height) * 2));
+  }
+  .square {
+    grid-template-columns: repeat(3, calc(var(--cell-width) * 2 / 3));
+    grid-template-rows: repeat(3, calc(var(--cell-height) * 2 / 3));
+  }
+
+  .cell {
+    width: calc(var(--cell-width) * 2 / 3);
+    height: calc(var(--cell-height) * 2 / 3);
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .cell .candidate-number-holder {
+    grid-template-columns: repeat(5, calc(var(--cell-width) / 5 * 2 / 3 - 1px));
+    grid-template-rows: repeat(2, calc(var(--cell-height) / 4 * 2 / 3));
+    row-gap: calc(var(--cell-height) / 4);
+    top: 2px;
+    left: 2px;
+  }
+
+  .active {
+    border: 1px solid #9ecaed;
+    /* border: none; */
+    box-shadow: none;
+  }
 }
