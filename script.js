@@ -406,14 +406,10 @@ function clearInput(event) {
 function validateInput(event) {
   // const acceptedValues = "123456789".split("").map((x) => +x);
   const acceptedValues = "123456789";
-  console.log("in validateInput function");
   let inputValue = event.target.value;
-  console.log(inputValue);
   if (inputValue.length === 1 && acceptedValues.includes(inputValue)) {
-    console.log("valid");
     return;
   } else {
-    console.log("invalid");
     if (acceptedValues.includes(inputValue.at(-1))) {
       event.target.value = inputValue.at(-1);
     } else {
@@ -630,10 +626,8 @@ function renderCandidateNumbersOnCell(cell, candidateNumbersArr) {
   if (candidateNumbersArr.length === 0) {
     return;
   }
-  console.log(cell);
   const cellDOM = document.querySelector(`#${cell}`);
-  console.log(cellDOM);
-  console.log(cellDOM.childNodes);
+
   for (const child of cellDOM.childNodes) {
     if (child.tagName !== "INPUT") {
       cellDOM.removeChild(child);
