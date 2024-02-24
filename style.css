@@ -20,11 +20,10 @@ body {
   justify-content: center;
 }
 
-/* #system-board, */
 #board {
   display: grid;
-  grid-template-columns: repeat(3, calc(var(--cell-width) * 3));
-  grid-template-rows: repeat(3, calc(var(--cell-height) * 3));
+  grid-template-columns: repeat(3, calc((var(--cell-width) + 1px) * 3));
+  grid-template-rows: repeat(3, calc((var(--cell-height) + 1px) * 3));
   justify-content: center;
   align-items: center;
   padding: 10px;
@@ -38,7 +37,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, var(--cell-width));
   grid-template-rows: repeat(3, var(--cell-height));
-  border: 1px solid var(--square-border);
+  border: 2px solid var(--square-border);
 }
 
 .cell {
@@ -153,6 +152,48 @@ body {
   font-size: 6rem;
 }
 
+.url-field {
+  display: flex;
+  background-color: var(--cell-border);
+  border-radius: 5px;
+  margin: 15px;
+}
+
+.share button {
+  display: block;
+  margin: 5px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.url {
+  display: flex;
+  background-color: transparent;
+  border: none;
+  padding-left: 10px;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  flex-grow: 2;
+  font-size: 0.8rem;
+  color: var(--candidate-number-colour);
+}
+
+.fa-clipboard {
+  color: white;
+  width: 40px;
+}
+
+.fa-clipboard.clicked {
+  color: var(--bs-primary);
+}
+
+.toast-header img {
+  width: 24px;
+}
+
 @media screen and (max-width: 575px) {
   h1 {
     font-size: 2rem;
@@ -176,12 +217,12 @@ body {
 
   #board {
     padding: 10px auto;
-    grid-template-columns: repeat(3, calc(var(--cell-width) * 2));
-    grid-template-rows: repeat(3, calc(var(--cell-height) * 2));
+    grid-template-columns: repeat(3, calc((var(--cell-width) + 1px) * 2));
+    grid-template-rows: repeat(3, calc((var(--cell-height) + 1px) * 2));
   }
   .square {
-    grid-template-columns: repeat(3, calc(var(--cell-width) * 2 / 3));
-    grid-template-rows: repeat(3, calc(var(--cell-height) * 2 / 3));
+    grid-template-columns: repeat(3, calc((var(--cell-width)) * 2 / 3));
+    grid-template-rows: repeat(3, calc((var(--cell-height)) * 2 / 3));
   }
 
   .cell {
@@ -202,7 +243,6 @@ body {
 
   .active {
     border: 1px solid #9ecaed;
-    /* border: none; */
     box-shadow: none;
   }
 }

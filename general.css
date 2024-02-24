@@ -13,8 +13,8 @@ body {
   --cell-right-colour: #dbf0d7;
   --cell-wrong-colour: #ff7f7f;
   --cell-border: #d3d3d3;
-  --cell-width: 55px;
-  --cell-height: 55px;
+  --cell-width: 60px;
+  --cell-height: 60px;
   --square-border: #818589;
   --board-border: #834333;
   --candidate-number-colour: #808080;

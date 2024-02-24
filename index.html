@@ -206,6 +206,15 @@
                 Try Again
               </button>
             </div>
+            <div class="share">
+              <div class="url-field">
+                <input class="url" type="text"></input>
+                <button type="button" class="clipboard">
+                  <i class="fa-regular fa-clipboard"></i>
+                </button>
+              </div>
+              <div class="copy-message"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -219,14 +228,38 @@
       </div>
     </div>
     <div
+      aria-live="polite"
+      aria-atomic="true"
       class="source-code-pro d-flex justify-content-center my-5"
       id="message"
     ></div>
+    <div class="toast-container p-3 top-0 end-0">
+      <div class="toast" role="alert">
+        <div class="toast-header">
+          <img src="./favicon.ico" class="rounded me-2" alt="Sudoku icon" />
+          <strong class="me-auto">Sudoku</strong>
+          <small class="text-body-secondary">just now</small>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">
+          Failed to load puzzle. Choose new difficulty instead.
+        </div>
+      </div>
+    </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
     <script src="script.js"></script>
+    <script
+      src="https://kit.fontawesome.com/27eb947f9d.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

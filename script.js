@@ -302,7 +302,8 @@ function updateUserBoardByDifficulty(
   countOfNumbersToReveal,
   minNumbersToRevealPerSquare,
   squareMap,
-  sameLevel = false
+  sameLevel = false,
+  encodedBoard = null
 ) {
   if (!sameLevel) {
     let squareMapOfCellsToReveal = structuredClone(squareMap);
@@ -318,6 +319,17 @@ function updateUserBoardByDifficulty(
     );
 
     listOfCellsToReveal = concatCellsToReveal(squareMapOfCellsToReveal);
+  }
+
+  if (encodedBoard) {
+    if (!listOfCellsToReveal) {
+      listOfCellsToReveal = [];
+    }
+    for (const cell of Object.keys(userBoard)) {
+      if (userBoard[cell].shownAtStart) {
+        listOfCellsToReveal.push(cell);
+      }
+    }
   }
 
   for (const cell of listOfCellsToReveal) {
@@ -337,7 +349,8 @@ function updateUserBoard(
   userBoard,
   squareMap,
   difficulty = "demo",
-  sameLevel = false
+  sameLevel = false,
+  encodedBoard = null
 ) {
   const [valid, countOfNumbersToReveal, minNumbersToRevealPerSquare] =
     SetDifficulty(difficulty);
@@ -346,7 +359,8 @@ function updateUserBoard(
     countOfNumbersToReveal,
     minNumbersToRevealPerSquare,
     squareMap,
-    sameLevel
+    sameLevel,
+    encodedBoard
   );
   highlightEmptyCells();
 }
@@ -359,23 +373,6 @@ function highlightEmptyCells() {
 }
 
 function displayBoardTemplate(userBoard) {
-  // For development only
-  // const systemBoard = document.querySelector("#system-board");
-  // for (const [key, value] of Object.entries(squareMap)) {
-  //   const square3x3 = document.createElement("div");
-  //   square3x3.id = key;
-  //   square3x3.classList.add("square");
-  //   for (const cell of value) {
-  //     const displayCell = document.createElement("div");
-  //     displayCell.id = cell;
-  //     displayCell.classList.add("cell");
-  //     square3x3.appendChild(displayCell);
-  //   }
-  //   systemBoard.appendChild(square3x3);
-  // }
-  // updateDisplayWithSystemBoard();
-
-  // For actual production
   const displayBoard = document.querySelector("#board");
   for (const [key, value] of Object.entries(squareMap)) {
     const square3x3 = document.createElement("div");
@@ -541,7 +538,7 @@ function showDifficulty(event) {
 
 /* Section: Start over */
 
-function tryAgain(newLevel = true) {
+function tryAgain(newLevel = true, encodedBoard = null) {
   // Resassign board data structure to original generated data structure. Reset variable values.
   lives = 3;
   document.querySelector(".lives span").innerText = lives;
@@ -567,6 +564,16 @@ function tryAgain(newLevel = true) {
   displayBoardTemplate(userBoard);
   if (newLevel) {
     showDifficulty();
+  } else if (encodedBoard) {
+    updateUserBoard(
+      board,
+      userBoard,
+      squareMap,
+      difficultySelected,
+      true,
+      encodedBoard
+    );
+    startStopwatch();
   } else {
     updateUserBoard(board, userBoard, squareMap, difficultySelected, true);
     startStopwatch();
@@ -597,16 +604,17 @@ function handleWinGameModalClick(event) {
     tryAgain();
   } else if (event.target.id === "share") {
     // Share puzzle link or trigger print browser as PDF
-    console.log("You real social bro!");
+    handleShareClick();
   }
 }
 
 function handleLoseModalClick(event) {
   if (event.target.id === "retryBoard") {
     loseGame.hide();
-    tryAgain(false);
+    tryAgain(false, encodedBoard);
   } else if (event.target.id === "tryNewPuzzle") {
     loseGame.hide();
+    encodedBoard = null;
     tryAgain();
   }
 }
@@ -723,10 +731,248 @@ function resetStopwatch() {
   document.querySelector(".winModalStopwatch").innerHTML = stopwatch.innerHTML;
 }
 
+/* Section: Share puzzle with friends */
+function difficultyToString(difficultySelected) {
+  const filler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let shuffledFiller = shuffleArray(filler.split(""));
+  let difficultyRepresentation;
+  switch (difficultySelected) {
+    case "demo":
+      difficultyRepresentation = 1;
+      break;
+    case "easy":
+      difficultyRepresentation = 2;
+      break;
+    case "beginner":
+      difficultyRepresentation = 3;
+      break;
+    case "novice":
+      difficultyRepresentation = 4;
+      break;
+    case "advanced":
+      difficultyRepresentation = 5;
+      break;
+    case "master":
+      difficultyRepresentation = 6;
+      break;
+    case "insane":
+      difficultyRepresentation = 7;
+      break;
+    default:
+      return;
+  }
+  const difficultyString =
+    shuffleArray([
+      shuffledFiller[0],
+      shuffledFiller[1],
+      difficultyRepresentation,
+    ]).join("") + "-";
+  return difficultyString;
+}
+
+function boardToString(board, userBoard) {
+  let newBoardString = "";
+  const characters =
+    "98ftpGJZRVbiWca1rU04Be6jmAzgysTLQCYPunoKhDF_H2qMNv5k7X3wlIOdExS";
+  const shownAtStartTrueMarker = [...characters.substring(0, 9).split("")];
+  const gameBoard = structuredClone(userBoard);
+  for (const [cell, value] of Object.entries(gameBoard)) {
+    if (gameBoard[cell].choice === null) {
+      gameBoard[cell].choice = board[cell];
+    }
+    if (userBoard[cell].shownAtStart) {
+      newBoardString += shuffleArray(shownAtStartTrueMarker)[0];
+    }
+    switch (gameBoard[cell].choice) {
+      case "1":
+        newBoardString += shuffleArray(
+          characters.substring(9, 15).split("")
+        )[0];
+        break;
+      case "2":
+        newBoardString += shuffleArray(
+          characters.substring(15, 21).split("")
+        )[0];
+        break;
+      case "3":
+        newBoardString += shuffleArray(
+          characters.substring(21, 27).split("")
+        )[0];
+        break;
+      case "4":
+        newBoardString += shuffleArray(
+          characters.substring(27, 33).split("")
+        )[0];
+        break;
+      case "5":
+        newBoardString += shuffleArray(
+          characters.substring(33, 39).split("")
+        )[0];
+        break;
+      case "6":
+        newBoardString += shuffleArray(
+          characters.substring(39, 45).split("")
+        )[0];
+        break;
+      case "7":
+        newBoardString += shuffleArray(
+          characters.substring(45, 51).split("")
+        )[0];
+        break;
+      case "8":
+        newBoardString += shuffleArray(
+          characters.substring(51, 57).split("")
+        )[0];
+        break;
+      case "9":
+        newBoardString += shuffleArray(characters.substring(57).split(""))[0];
+        break;
+      default:
+        break;
+    }
+  }
+
+  return newBoardString;
+}
+
+function parseDifficultyString(difficultyString) {
+  let difficulty;
+  if (difficultyString.includes("1")) {
+    difficulty = "demo";
+  } else if (difficultyString.includes("2")) {
+    difficulty = "easy";
+  } else if (difficultyString.includes("3")) {
+    difficulty = "beginner";
+  } else if (difficultyString.includes("4")) {
+    difficulty = "novice";
+  } else if (difficultyString.includes("5")) {
+    difficulty = "advanced";
+  } else if (difficultyString.includes("6")) {
+    difficulty = "master";
+  } else if (difficultyString.includes("7")) {
+    difficulty = "insane";
+  }
+  return difficulty;
+}
+
+function StringToBoard(difficultyBoardString, board, userBoard) {
+  const [difficultyString, boardString] = difficultyBoardString.split("-");
+  let boardArr = boardString.split("");
+  const characters =
+    "98ftpGJZRVbiWca1rU04Be6jmAzgysTLQCYPunoKhDF_H2qMNv5k7X3wlIOdExS";
+  const shownAtStartTrueMarker = [...characters.substring(0, 9).split("")];
+
+  let difficulty = parseDifficultyString(difficultyString);
+
+  for (const cell of Object.keys(userBoard)) {
+    if (shownAtStartTrueMarker.includes(boardArr[0])) {
+      userBoard[cell].shownAtStart = true;
+      boardArr.shift();
+
+      if (characters.substring(9, 15).includes(boardArr[0])) {
+        userBoard[cell].choice = "1";
+        board[cell] = "1";
+      } else if (characters.substring(15, 21).includes(boardArr[0])) {
+        userBoard[cell].choice = "2";
+        board[cell] = "2";
+      } else if (characters.substring(21, 27).includes(boardArr[0])) {
+        userBoard[cell].choice = "3";
+        board[cell] = "3";
+      } else if (characters.substring(27, 33).includes(boardArr[0])) {
+        userBoard[cell].choice = "4";
+        board[cell] = "4";
+      } else if (characters.substring(33, 39).includes(boardArr[0])) {
+        userBoard[cell].choice = "5";
+        board[cell] = "5";
+      } else if (characters.substring(39, 45).includes(boardArr[0])) {
+        userBoard[cell].choice = "6";
+        board[cell] = "6";
+      } else if (characters.substring(45, 51).includes(boardArr[0])) {
+        userBoard[cell].choice = "7";
+        board[cell] = "7";
+      } else if (characters.substring(51, 57).includes(boardArr[0])) {
+        userBoard[cell].choice = "8";
+        board[cell] = "8";
+      } else if (characters.substring(57).includes(boardArr[0])) {
+        userBoard[cell].choice = "9";
+        board[cell] = "9";
+      }
+    } else {
+      userBoard[cell].shownAtStart = false;
+      // userBoard[cell].choice = null;
+      if (characters.substring(9, 15).includes(boardArr[0])) {
+        board[cell] = "1";
+      } else if (characters.substring(15, 21).includes(boardArr[0])) {
+        board[cell] = "2";
+      } else if (characters.substring(21, 27).includes(boardArr[0])) {
+        board[cell] = "3";
+      } else if (characters.substring(27, 33).includes(boardArr[0])) {
+        board[cell] = "4";
+      } else if (characters.substring(33, 39).includes(boardArr[0])) {
+        board[cell] = "5";
+      } else if (characters.substring(39, 45).includes(boardArr[0])) {
+        board[cell] = "6";
+      } else if (characters.substring(45, 51).includes(boardArr[0])) {
+        board[cell] = "7";
+      } else if (characters.substring(51, 57).includes(boardArr[0])) {
+        board[cell] = "8";
+      } else if (characters.substring(57).includes(boardArr[0])) {
+        board[cell] = "9";
+      }
+    }
+    boardArr.shift();
+  }
+
+  return [difficulty, board, userBoard];
+}
+
+function handleClipboardClick() {
+  // Get the text field
+  var copyText = document.querySelector(".url");
+
+  // Check if document is in focus
+  if (document.activeElement !== document.body) {
+    document.body.focus();
+  }
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value);
+  const clipboard = document.querySelector(".fa-clipboard");
+  clipboard.classList.add("clicked");
+}
+
+function handleShareClick() {
+  const puzzleValue =
+    difficultyToString(difficultySelected) + boardToString(board, userBoard);
+  const encodedBoard = encodeURIComponent(puzzleValue);
+  const shareableUrl =
+    window.location.href.split("?")[0] + "?puzzle=" + encodedBoard;
+  const shareUrl = document.querySelector(".url");
+  shareUrl.value = shareableUrl;
+  const clipboard = document.querySelector(".clipboard");
+  clipboard.addEventListener("click", handleClipboardClick);
+}
+
+function updateDisplayUsingShare(userBoard) {
+  for (const cell of Object.keys(userBoard)) {
+    if (userBoard[cell].choice) {
+      document.querySelector(`#board .square #${cell}`).innerHTML =
+        userBoard[cell].choice;
+    }
+  }
+  highlightEmptyCells();
+}
+
 /* Section: function calls to get game rolling */
 
 let [board, squareMap] = initialiseBoard();
 let userBoard = createUserBoardDataStructure();
+const params = new URLSearchParams(window.location.search);
+let encodedBoard = params.get("puzzle");
 // board = { cell: null },
 // squareMap = { square11 = [a1, a2, a3, ... ] , ...,  square33 = []}, moves = [];
 // userBoard = {a1: { shownAtStart: false, choice: null, userNotes:[] }}
@@ -738,20 +984,43 @@ const startOver = new bootstrap.Modal("#startOverModal");
 const winGame = new bootstrap.Modal("#winModal");
 const loseGame = new bootstrap.Modal("#loseModal");
 
-fillBoard(board, cellsList, []);
-logBoardState(board);
-displayBoardTemplate(userBoard);
 const startOverButton = document.querySelector("#startOver");
 startOverButton.addEventListener("click", handleStartOverClick);
 const hintbutton = document.querySelector("#hint");
 hintbutton.addEventListener("click", handleHintClick);
-window.addEventListener("load", showDifficulty);
+if (encodedBoard) {
+  try {
+    const decodedBoard = decodeURIComponent(encodedBoard);
+    [difficultySelected, board, userBoard] = StringToBoard(
+      decodedBoard,
+      board,
+      userBoard
+    );
+    displayBoardTemplate(userBoard);
+    updateDisplayUsingShare(userBoard);
+    startStopwatch();
+  } catch {
+    const toastEl = document.querySelector(".toast");
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+    fillBoard(board, cellsList, []);
+    displayBoardTemplate(userBoard);
+    window.addEventListener("load", showDifficulty);
+  }
+} else {
+  fillBoard(board, cellsList, []);
+  displayBoardTemplate(userBoard);
+  window.addEventListener("load", showDifficulty);
+}
 const tooltipTriggerList = document.querySelectorAll(
   '[data-bs-toggle="tooltip"]'
 );
 const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 );
+logBoardState(board);
 
-//https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
-// ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1
+// https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
+// ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
+// create copy to clipboard button: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
+// Style copy to clipboard button within input https://stackoverflow.com/questions/15314407/how-to-add-button-inside-an-input
