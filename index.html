@@ -21,14 +21,28 @@
     />
   </head>
   <body>
-    <h1 class="source-code-pro">Sudoku</h1>
+    <header>
+      <div class="sodoku-title">
+        <h1 class="source-code-pro">Sudoku</h1>
+      </div>
+      <div class="btn-group btn-group-lg input-method p-1" role="group" aria-label="Radio toggle input or notes">
+        <input type="radio" class="btn-check" name="btnradio" id="answer" autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for="answer">Answer</label>
+      
+        <input type="radio" class="btn-check" name="btnradio" id="note" autocomplete="off">
+        <label class="btn btn-outline-primary" for="note">Add Notes</label>
+      </div>
+    
+      
+      
+    </header>
     <div class="menu source-code-pro">
       <button
         class="btn btn-info"
         style="min-width: 100px"
         data-bs-toggle="tooltip"
         data-bs-placement="top"
-        data-bs-title="Toggle this button on and select cell to get candidate numbers for cell and consume one life."
+        data-bs-title="Toggle this button on and select cell to get its candidate numbers. Consumes one life."
         id="hint"
       >
         Hint
@@ -120,9 +134,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Do you really want to start over?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div class="buttons-area">
+            <div class="d-flex">
               <button
                 type="button"
                 class="btn btn-success btn-lg no"
@@ -145,13 +160,22 @@
     <div class="modal" tabindex="-1" id="loseModal">
       <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content">
-          <div class="modal-body">
+          <div class="modal-header">
             <h5 class="modal-title">You lose.</h5>
-            <div class="buttons-area">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex flex-column">
               <button
                 type="button"
                 class="btn btn-success btn-lg"
-                style="min-width: 120px"
+                id="shareLose"
+              >
+                Share
+              </button>
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
                 id="retryBoard"
               >
                 Retry Same Board
@@ -159,11 +183,18 @@
               <button
                 type="button"
                 class="btn btn-success btn-lg"
-                style="min-width: 120px"
                 id="tryNewPuzzle"
               >
                 Try New Puzzle
               </button>
+            </div>
+            <div class="share">
+              <div class="url-field">
+                <input class="url" type="text">
+                <button type="button" class="clipboard">
+                  <i class="fa-regular fa-clipboard"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -172,9 +203,15 @@
     <div class="modal" tabindex="-1" id="winModal">
       <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              Congratulations!
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
           <div class="modal-body">
             <h5 class="modal-title">
-              Congratulations! You won
+              You won
               <strong id="difficultySelected"></strong> mode!
             </h5>
             <div class="d-flex justify-content-between">
@@ -188,12 +225,12 @@
               </div>
               <div class="confetti">🎊</div>
             </div>
-            <div class="buttons-area">
+            <div class="d-flex">
               <button
                 type="button"
                 class="btn btn-success"
                 style="min-width: 120px"
-                id="share"
+                id="shareWin"
               >
                 Share
               </button>
@@ -203,7 +240,7 @@
                 style="min-width: 120px"
                 id="tryAgain"
               >
-                Try Again
+                New Game
               </button>
             </div>
             <div class="share">
@@ -213,16 +250,12 @@
                   <i class="fa-regular fa-clipboard"></i>
                 </button>
               </div>
-              <div class="copy-message"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="board-background">
-      <!-- <div id="board-wrapper">
-        <div id="system-board"></div>
-      </div> -->
       <div id="board-wrapper">
         <form id="board"></form>
       </div>

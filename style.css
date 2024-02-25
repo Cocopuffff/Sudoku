@@ -2,6 +2,20 @@ body {
   background-color: #faf9f6;
 }
 
+header {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .btn {
   min-width: 80px;
   height: 3rem;
@@ -54,7 +68,7 @@ body {
 .cell .candidate-number-holder {
   position: absolute;
   display: grid;
-  grid-template-columns: repeat(5, calc(var(--cell-width) / 5));
+  grid-template-columns: repeat(5, calc((var(--cell-width) / 5 - 1px)));
   grid-template-rows: repeat(2, calc(var(--cell-height) / 5));
   row-gap: calc(var(--cell-height) * 2.5 / 5);
   top: 3px;
@@ -63,7 +77,7 @@ body {
 
 .candidate-number {
   color: var(--candidate-number-colour);
-  font-size: 0.5rem;
+  font-size: 0.7rem;
 }
 
 .board-input {
@@ -141,10 +155,6 @@ body {
   display: block;
 }
 
-.buttons-area {
-  display: flex;
-}
-
 .confetti {
   display: flex;
   align-items: center;
@@ -195,9 +205,13 @@ body {
 }
 
 @media screen and (max-width: 575px) {
-  h1 {
+  header h1 {
+    position: relative;
     font-size: 2rem;
     line-height: 2.5rem;
+    left: auto;
+    transform: translateX(0%);
+    margin-left: 30px;
   }
 
   .btn {
@@ -239,6 +253,10 @@ body {
     row-gap: calc(var(--cell-height) / 4);
     top: 2px;
     left: 2px;
+  }
+
+  .candidate-number {
+    font-size: 0.5rem;
   }
 
   .active {

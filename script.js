@@ -391,7 +391,7 @@ function displayBoardTemplate(userBoard) {
   const boardInputs = document.querySelectorAll(".board-input");
   for (const input of boardInputs) {
     input.addEventListener("focusin", clearInput);
-    input.addEventListener("input", validateInput);
+    input.addEventListener("input", evaluateInput); // replace validateInput with evaluateInput
     input.addEventListener("focusout", evaluateCell);
   }
 }
@@ -405,13 +405,46 @@ function validateInput(event) {
   const acceptedValues = "123456789";
   let inputValue = event.target.value;
   if (inputValue.length === 1 && acceptedValues.includes(inputValue)) {
-    return;
+    return inputValue;
   } else {
     if (acceptedValues.includes(inputValue.at(-1))) {
       event.target.value = inputValue.at(-1);
     } else {
       event.target.value = "";
     }
+  }
+}
+
+// on input, check if number is already in notes. If in notes, remove number from notes. Else, add number to notes. on every change, add/ remove note from DOM.
+function manageNotes(event) {
+  const inputField = event.target;
+  const cell = event.target.parentNode.id;
+
+  const number = validateInput(event);
+  clearInput(event);
+  if (userBoard[cell].userNote.includes(number)) {
+    userBoard[cell].userNote = userBoard[cell].userNote.filter(
+      (x) => x != number
+    );
+  } else {
+    userBoard[cell].userNote.push(number);
+  }
+  manageNotesRenderCandidateNumbers(cell, number);
+  // Clean up adding notes event
+  inputField.addEventListener("focusout", (event) =>
+    event.target.addEventListener("focusout", evaluateCell)
+  );
+}
+
+function evaluateInput(event) {
+  validateInput(event);
+  if (answerInputState) {
+    return;
+  } else {
+    // if in note taking state, temporarily remove evaluateCell on focus out. Add event listener to manageNotes on input.
+    const inputField = event.target;
+    inputField.removeEventListener("focusout", evaluateCell);
+    manageNotes(event);
   }
 }
 
@@ -429,10 +462,10 @@ function evaluateCell(e) {
 
     // check win condition
     if (checkWin(userBoard)) {
-      // confetti modal, displaying lives left, time taken, share results, share same puzzle
       stopStopwatch();
       document.querySelector("#difficultySelected").innerText =
         difficultySelected;
+      document.querySelector("#winModal .lives strong").innerText = lives;
       winGame.show();
       document.querySelector(".winModalStopwatch").innerHTML =
         stopwatch.innerHTML;
@@ -602,8 +635,7 @@ function handleWinGameModalClick(event) {
   if (event.target.id === "tryAgain") {
     winGame.hide();
     tryAgain();
-  } else if (event.target.id === "share") {
-    // Share puzzle link or trigger print browser as PDF
+  } else if (event.target.id === "shareWin") {
     handleShareClick();
   }
 }
@@ -616,6 +648,8 @@ function handleLoseModalClick(event) {
     loseGame.hide();
     encodedBoard = null;
     tryAgain();
+  } else if (event.target.id === "shareLose") {
+    handleShareClick();
   }
 }
 
@@ -628,6 +662,42 @@ function changeUserBoardDataStructureToSystemBoardDataStructure(
     newBoard[cell] = userBoard[cell].choice;
   }
   return newBoard;
+}
+
+function refocusOnCell(event) {
+  const candidateNumbersHolder = event.target;
+  if (candidateNumbersHolder.previousSibling.tagName === "INPUT") {
+    candidateNumbersHolder.previousSibling.focus();
+  }
+}
+
+function manageNotesRenderCandidateNumbers(cell, candidateNumber) {
+  const cellDOM = document.querySelector(`#${cell}`);
+  let candidateNumbersHolder = document.querySelector(
+    `#${cell} .candidate-number-holder`
+  );
+
+  if (!candidateNumbersHolder) {
+    candidateNumbersHolder = document.createElement("div");
+    candidateNumbersHolder.classList.add("candidate-number-holder");
+    cellDOM.appendChild(candidateNumbersHolder);
+    candidateNumbersHolder.addEventListener("click", refocusOnCell);
+  }
+
+  const numberEl = candidateNumbersHolder.querySelector(
+    `.num${candidateNumber}`
+  );
+  if (!numberEl) {
+    // add candidate number to cell
+    const candidateNumberDiv = document.createElement("div");
+    candidateNumberDiv.classList.add("candidate-number");
+    candidateNumberDiv.classList.add(`num${candidateNumber}`);
+    candidateNumberDiv.innerText = candidateNumber;
+    candidateNumbersHolder.appendChild(candidateNumberDiv);
+  } else {
+    // remove candidate number from cell
+    numberEl.remove();
+  }
 }
 
 function renderCandidateNumbersOnCell(cell, candidateNumbersArr) {
@@ -647,17 +717,15 @@ function renderCandidateNumbersOnCell(cell, candidateNumbersArr) {
   for (const number of candidateNumbersArr) {
     const candidateNumberDiv = document.createElement("div");
     candidateNumberDiv.classList.add("candidate-number");
+    candidateNumberDiv.classList.add(`num${number}`);
     candidateNumberDiv.innerText = number;
     candidateNumbersHolder.appendChild(candidateNumberDiv);
   }
-  candidateNumbersHolder.addEventListener("click", (event) => {
-    if (candidateNumbersHolder.previousSibling.tagName === "INPUT") {
-      candidateNumbersHolder.previousSibling.focus();
-    }
-  });
+  candidateNumbersHolder.addEventListener("click", refocusOnCell);
 }
 
 function handleHintSelectCell(event) {
+  let selectedCell;
   const displayBoard = document.querySelector("#board");
   displayBoard.removeEventListener("click", handleHintClick);
   displayBoard.removeEventListener("click", handleHintSelectCell);
@@ -665,7 +733,10 @@ function handleHintSelectCell(event) {
   lives--;
   const livesDisplay = document.querySelector(".lives span");
   livesDisplay.innerText = lives;
-  if (event.target.classList.contains("board-input")) {
+  if (
+    event.target.classList.contains("board-input") ||
+    event.target.classList.contains("candidate-number-holder")
+  ) {
     const selectedCell = event.target.parentNode.id;
     const currentBoard = changeUserBoardDataStructureToSystemBoardDataStructure(
       board,
@@ -676,6 +747,7 @@ function handleHintSelectCell(event) {
       currentBoard,
       squareMap
     );
+    userBoard[selectedCell].userNote = [...candidateNumbersArr];
     renderCandidateNumbersOnCell(selectedCell, candidateNumbersArr);
   }
 }
@@ -926,6 +998,11 @@ function StringToBoard(difficultyBoardString, board, userBoard) {
   return [difficulty, board, userBoard];
 }
 
+function clipboardClickAnimation(clipboard) {
+  clipboard.classList.add("clicked");
+  setTimeout(clipboard.classList.remove("clicked"), 3000);
+}
+
 function handleClipboardClick() {
   // Get the text field
   var copyText = document.querySelector(".url");
@@ -941,8 +1018,8 @@ function handleClipboardClick() {
 
   // Copy the text inside the text field
   navigator.clipboard.writeText(copyText.value);
-  const clipboard = document.querySelector(".fa-clipboard");
-  clipboard.classList.add("clicked");
+  const clipboardButtons = document.querySelectorAll(".fa-clipboard");
+  [...clipboardButtons].map((clipboard) => clipboardClickAnimation(clipboard));
 }
 
 function handleShareClick() {
@@ -951,10 +1028,12 @@ function handleShareClick() {
   const encodedBoard = encodeURIComponent(puzzleValue);
   const shareableUrl =
     window.location.href.split("?")[0] + "?puzzle=" + encodedBoard;
-  const shareUrl = document.querySelector(".url");
-  shareUrl.value = shareableUrl;
-  const clipboard = document.querySelector(".clipboard");
-  clipboard.addEventListener("click", handleClipboardClick);
+  const shareUrlEls = document.querySelectorAll(".url");
+  [...shareUrlEls].map((shareUrlEl) => (shareUrlEl.value = shareableUrl));
+  const clipboards = document.querySelectorAll(".clipboard");
+  [...clipboards].map((clipboard) =>
+    clipboard.addEventListener("click", handleClipboardClick)
+  );
 }
 
 function updateDisplayUsingShare(userBoard) {
@@ -967,16 +1046,30 @@ function updateDisplayUsingShare(userBoard) {
   highlightEmptyCells();
 }
 
+function handleSwitchInputMethod(event) {
+  const answerRadio = document.querySelector("#answer");
+  const noteRadio = document.querySelector("#note");
+  if (event.target === document.querySelector("label[for='answer']")) {
+    answerRadio.checked = true;
+    answerInputState = true;
+  } else if (event.target === document.querySelector("label[for='note']")) {
+    noteRadio.checked = true;
+    answerInputState = false;
+  }
+}
+
 /* Section: function calls to get game rolling */
 
 let [board, squareMap] = initialiseBoard();
 let userBoard = createUserBoardDataStructure();
-const params = new URLSearchParams(window.location.search);
-let encodedBoard = params.get("puzzle");
+
 // board = { cell: null },
 // squareMap = { square11 = [a1, a2, a3, ... ] , ...,  square33 = []}, moves = [];
 // userBoard = {a1: { shownAtStart: false, choice: null, userNotes:[] }}
+const params = new URLSearchParams(window.location.search);
+let encodedBoard = params.get("puzzle");
 let cellsList = Object.keys(board);
+let answerInputState = true;
 let lives = 3;
 let difficultySelected, listOfCellsToReveal;
 const chooseDifficulty = new bootstrap.Modal("#chooseDifficulty");
@@ -984,6 +1077,8 @@ const startOver = new bootstrap.Modal("#startOverModal");
 const winGame = new bootstrap.Modal("#winModal");
 const loseGame = new bootstrap.Modal("#loseModal");
 
+const inputMethod = document.querySelector(".input-method");
+inputMethod.addEventListener("click", handleSwitchInputMethod);
 const startOverButton = document.querySelector("#startOver");
 startOverButton.addEventListener("click", handleStartOverClick);
 const hintbutton = document.querySelector("#hint");
@@ -1024,3 +1119,5 @@ logBoardState(board);
 // ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
 // create copy to clipboard button: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 // Style copy to clipboard button within input https://stackoverflow.com/questions/15314407/how-to-add-button-inside-an-input
+// Style title and button group https://stackoverflow.com/questions/33444666/how-to-center-align-one-flex-item-and-right-align-another-using-flexbox
+// Check & uncheck radio button by javascript https://bobbyhadz.com/blog/javascript-set-radio-to-checked-unchecked#:~:text=To%20set%20a%20radio%20button,same%20name%20attribute%20become%20unchecked.
