@@ -391,7 +391,7 @@ function displayBoardTemplate(userBoard) {
   const boardInputs = document.querySelectorAll(".board-input");
   for (const input of boardInputs) {
     input.addEventListener("focusin", clearInput);
-    input.addEventListener("input", evaluateInput); // replace validateInput with evaluateInput
+    input.addEventListener("input", evaluateInput);
     input.addEventListener("focusout", evaluateCell);
   }
 }
@@ -401,7 +401,6 @@ function clearInput(event) {
 }
 
 function validateInput(event) {
-  // const acceptedValues = "123456789".split("").map((x) => +x);
   const acceptedValues = "123456789";
   let inputValue = event.target.value;
   if (inputValue.length === 1 && acceptedValues.includes(inputValue)) {
@@ -421,6 +420,9 @@ function manageNotes(event) {
   const cell = event.target.parentNode.id;
 
   const number = validateInput(event);
+  if (!number) {
+    return;
+  }
   clearInput(event);
   if (userBoard[cell].userNote.includes(number)) {
     userBoard[cell].userNote = userBoard[cell].userNote.filter(
@@ -437,7 +439,7 @@ function manageNotes(event) {
 }
 
 function evaluateInput(event) {
-  validateInput(event);
+  let number = validateInput(event);
   if (answerInputState) {
     return;
   } else {
@@ -505,7 +507,6 @@ function handleDifficultyButtonsClick(event) {
   if (event.target.classList.contains("difficulty")) {
     difficultySelected = event.target.id;
     updateUserBoard(board, userBoard, squareMap, difficultySelected);
-    logBoardState(board);
     startStopwatch();
     chooseDifficulty.hide();
   }
@@ -575,7 +576,6 @@ function tryAgain(newLevel = true, encodedBoard = null) {
   // Resassign board data structure to original generated data structure. Reset variable values.
   lives = 3;
   document.querySelector(".lives span").innerText = lives;
-  // document.querySelector("#system-board").innerHTML = "";
   document.querySelector("#board").innerHTML = "";
   document.querySelector("#message").innerText = "";
   resetStopwatch();
@@ -1113,7 +1113,6 @@ const tooltipTriggerList = document.querySelectorAll(
 const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 );
-logBoardState(board);
 
 // https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
 // ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
