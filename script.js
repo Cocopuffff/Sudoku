@@ -1000,7 +1000,7 @@ function StringToBoard(difficultyBoardString, board, userBoard) {
 
 function clipboardClickAnimation(clipboard) {
   clipboard.classList.add("clicked");
-  setTimeout(clipboard.classList.remove("clicked"), 3000);
+  setTimeout(() => clipboard.classList.remove("clicked"), 3000);
 }
 
 function handleClipboardClick() {
@@ -1031,9 +1031,10 @@ function handleShareClick() {
   const shareUrlEls = document.querySelectorAll(".url");
   [...shareUrlEls].map((shareUrlEl) => (shareUrlEl.value = shareableUrl));
   const clipboards = document.querySelectorAll(".clipboard");
-  [...clipboards].map((clipboard) =>
-    clipboard.addEventListener("click", handleClipboardClick)
-  );
+  [...clipboards].map((clipboard) => {
+    clipboard.addEventListener("click", handleClipboardClick);
+    clipboard.addEventListener("touchend", handleClipboardClick);
+  });
 }
 
 function updateDisplayUsingShare(userBoard) {
