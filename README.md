@@ -69,7 +69,7 @@ I would like to add a "challenge of the day" feature where every player gets the
 
 ## Attributions:
 
-- ChatGPT: refine recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
+- ChatGPT: refine recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends via URL
 - Create timer functionality: https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
 - Create copy to clipboard button: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 - Style copy to clipboard button within input area: https://stackoverflow.com/questions/15314407/how-to-add-button-inside-an-input
