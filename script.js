@@ -1113,10 +1113,3 @@ const tooltipTriggerList = document.querySelectorAll(
 const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 );
-
-// https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
-// ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
-// create copy to clipboard button: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
-// Style copy to clipboard button within input https://stackoverflow.com/questions/15314407/how-to-add-button-inside-an-input
-// Style title and button group https://stackoverflow.com/questions/33444666/how-to-center-align-one-flex-item-and-right-align-another-using-flexbox
-// Check & uncheck radio button by javascript https://bobbyhadz.com/blog/javascript-set-radio-to-checked-unchecked#:~:text=To%20set%20a%20radio%20button,same%20name%20attribute%20become%20unchecked.
