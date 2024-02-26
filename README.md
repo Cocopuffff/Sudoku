@@ -22,23 +22,34 @@ I have implemented a slightly modified version of the Sudoku game with lives as 
 
 ## Screenshot(s) of game:
 
-### Difficulty menu
-
-![Choose difficulty on load](./screenshots/1_choose_difficulty.png?raw=true "Difficulty menu")
-
 ### In-game functionalities
 
-![Toggle add notes mode](./screenshots/2_toggle_add_notes.png?raw=true "Add notes mode")
-![Live deducted on wrong move](./screenshots/3_lives_mechanic.png?raw=true "Lives mechanic")
-![Clicking on hint button actives an event listener for the next cell that I click on](./screenshots/4_click_hint_button.png?raw=true "Click hint button")
-![Clicked on cell after toggling hint](./screenshots/5_hint_on_e4.png?raw=true "Hint generated candidate numbers for cell e4")
+- Choose difficulty
+  ![Choose difficulty on load](./screenshots/1_choose_difficulty.png?raw=true "Difficulty menu")
+
+- Toggle add notes / answer mode
+  ![Toggle add notes mode](./screenshots/2_toggle_add_notes.png?raw=true "Add notes mode")
+
+- Lives mechanic
+  ![Live deducted on wrong move](./screenshots/3_lives_mechanic.png?raw=true "Lives mechanic")
+
+- Click hint button (Hint generated candidate numbers for cell e4 in next screenshot)
+  ![Clicking on hint button actives an event listener for the next cell that I click on](./screenshots/4_click_hint_button.png?raw=true "Click hint button")
+  ![Clicked on cell after toggling hint](./screenshots/5_hint_on_e4.png?raw=true "Hint generated candidate numbers for cell e4")
 
 # Share link functionality and win-lose modals
 
-![Includes link sharing, retry game and start new game functionality](./screenshots/6_lose_share.png?raw=true "Lose game modal")
-![Game includes a board game decoder using URI component parameters on load](./screenshots/7_load_game_using_share_link.png?raw=true "Load shared game")
-![Includes link sharing and start new game functionality](./screenshots/8_win.png?raw=true "Win game modal")
-![Gives user an option to start new game and show difficulty menu](./screenshots/9_start_over_modal.png?raw=true "Click start over game")
+- Lose game modal
+  ![Includes link sharing, retry game and start new game functionality](./screenshots/6_lose_share.png?raw=true "Lose game modal")
+
+- Load shared game by url
+  ![Game includes a board game decoder using URI component parameters on load](./screenshots/7_load_game_using_share_link.png?raw=true "Load shared game")
+
+- Win game modal
+  ![Includes link sharing and start new game functionality](./screenshots/8_win.png?raw=true "Win game modal")
+
+- Start over
+  ![Gives user an option to start new game and show difficulty menu](./screenshots/9_start_over_modal.png?raw=true "Click start over game")
 
 ## Technologies Used:
 
@@ -58,7 +69,7 @@ I would like to add a "challenge of the day" feature where every player gets the
 
 ## Attributions:
 
-- ChatGPT: recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
+- ChatGPT: refine recursive filling of board puzzle, pulse animation on lives = 1, sharing of current Board with other friends in URI
 - Create timer functionality: https://www.educative.io/answers/how-to-create-a-stopwatch-in-javascript
 - Create copy to clipboard button: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 - Style copy to clipboard button within input area: https://stackoverflow.com/questions/15314407/how-to-add-button-inside-an-input
